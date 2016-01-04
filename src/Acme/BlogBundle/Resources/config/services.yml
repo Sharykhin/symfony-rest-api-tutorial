@@ -1,4 +1,6 @@
 services:
-#    acme_blog.example:
-#        class: Acme\BlogBundle\Example
-#        arguments: [@service_id, "plain_value", %parameter%]
+
+    acme_blog.page.handler:
+        class: Acme\BlogBundle\Handler\PageHandler
+        arguments: ["@=service('doctrine_mongodb').getRepository('AcmeBlogBundle:Page')"]
+
