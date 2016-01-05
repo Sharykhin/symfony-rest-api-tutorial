@@ -5,6 +5,8 @@ namespace Acme\BlogBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use Acme\BlogBundle\Model\PageInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @MongoDB\Document (collection="pages")
@@ -12,14 +14,26 @@ use JMS\Serializer\Annotation\Expose;
  * @ExclusionPolicy("all")
  *
  */
-class Page
+class Page implements PageInterface
 {
-    /** @MongoDB\Id  */
+    /**
+     * @MongoDB\Id
+     * @Expose
+     */
     protected $id;
 
     /**
      * @MongoDB\String
      * @Expose
+     *
+     * @Assert\NotBlank()
+     * @Assert\NotNull()
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "Your title must be at least {{ limit }} characters length",
+     *      maxMessage = "Your title name cannot be longer than {{ limit }} characters length"
+     * )
      */
     protected $title;
 

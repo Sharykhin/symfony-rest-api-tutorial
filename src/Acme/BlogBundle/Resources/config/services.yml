@@ -1,9 +1,12 @@
+parameters:
+    acme_blog.document.page.class: 'Acme\BlogBundle\Document\Page'
+
 services:
     acme_blog.page.repository:
         class: Doctrine\ORM\EntityRepository
         factory: [@doctrine.odm.mongodb.document_manager, getRepository]
         arguments:
-            - Acme\BlogBundle\Document\Page
+            - "%acme_blog.document.page.class%"
 
 #    acme_blog.page.handler:
 #        class: Acme\BlogBundle\Handler\PageHandler
@@ -13,3 +16,5 @@ services:
         class: Acme\BlogBundle\Handler\PageHandler
         arguments:
             - "@acme_blog.page.repository"
+            - "@doctrine.odm.mongodb.document_manager"
+            - "%acme_blog.document.page.class%"
