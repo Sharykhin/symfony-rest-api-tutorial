@@ -3,8 +3,11 @@
 namespace Acme\BlogBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Symfony\Component\Form\FormFactoryInterface;
+use Acme\BlogBundle\Form\PageType;
 use Acme\BlogBundle\Model\PageInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Acme\BlogBundle\Exception\InvalidFormException;
 
 
 class PageHandler implements PageHandlerInterface
@@ -16,11 +19,19 @@ class PageHandler implements PageHandlerInterface
 
     private $om;
 
-    public function __construct(DocumentRepository $repository, ObjectManager $om, $entityClass)
+    private $formFactory;
+
+    public function __construct(
+        DocumentRepository $repository,
+        ObjectManager $om,
+        FormFactoryInterface $formFactory,
+        $entityClass
+    )
     {
         $this->repository = $repository;
         $this->om = $om;
         $this->entityClass = $entityClass;
+        $this->formFactory = $formFactory;
     }
 
     public function get($id)
@@ -30,15 +41,28 @@ class PageHandler implements PageHandlerInterface
 
     public function post(array $parameters)
     {
-        return $this->createPage(new $this->entityClass(), $parameters);
+        $page = $this->createPage();
+
+        return $this->processForm($page, $parameters, 'POST');
     }
 
-    private function createPage(PageInterface $page, array $parameters)
+    private function processForm(PageInterface $page, array $parameters, $method = "PUT")
     {
-        $page->setTitle($parameters['title']);
-        $page->setBody($parameters['body']);
-        $this->om->persist($page);
-        $this->om->flush();
-        return $page;
+        $form = $this->formFactory->create(new PageType(), $page, ['method' => $method]);
+        $form->submit($parameters, 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            $page = $form->getData();
+            $this->om->persist($page);
+            $this->om->flush($page);
+            return $page;
+        }
+
+        throw new InvalidFormException('Invalid submitted data', $form);
+    }
+
+    private function createPage()
+    {
+        return new $this->entityClass();
     }
 }
