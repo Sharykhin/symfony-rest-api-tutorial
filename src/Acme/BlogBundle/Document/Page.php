@@ -3,17 +3,30 @@
 namespace Acme\BlogBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
 
-/** @MongoDB\Document (collection="pages")  */
+/**
+ * @MongoDB\Document (collection="pages")
+ *
+ * @ExclusionPolicy("all")
+ *
+ */
 class Page
 {
     /** @MongoDB\Id  */
     protected $id;
 
-    /** @MongoDB\String  */
+    /**
+     * @MongoDB\String
+     * @Expose
+     */
     protected $title;
 
-    /** @MongoDB\String */
+    /**
+     * @MongoDB\String
+     * @Expose
+     */
     protected $body;
 
     /**
