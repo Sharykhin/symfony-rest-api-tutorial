@@ -3,23 +3,25 @@
 namespace Acme\BlogBundle\Tests\Handler;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Acme\BlogBundle\Handler\PageHandler;
-use Acme\BlogBundle\Model\PageInterface;
 
-class PageHandlerTest extends \PHPUnit_Framework_TestCase
+class PageHandlerTest extends WebTestCase
 {
-    /** @var PageHandler */
-    protected $pageHandler;
 
-    public function testGet()
+    /**
+     * @dataProvider urlProvider
+     */
+    public function testGet($url)
     {
-        $id = "568a0bcec7a80ff4ee9cc70b";
-        $page = $this->getPage();
-        $this->repository->expects($this->once())
-            ->method('find')
-            ->with($this->equalTo($id))
-            ->will($this->returnValue($page));
+        $client = self::createClient();
+        $client->request('GET', $url, [], [] ,$server = ['CONTENT_TYPE'=>'application/json']);
+        $response = $client->getResponse();
+        $this->assertTrue($response->isSuccessful());
+    }
 
-        $this->pageHandler->get($id);
+    public function urlProvider()
+    {
+        return array(
+            array('/api/v1/pages/568b68a33dfd592f2b8b4567')
+        );
     }
 }

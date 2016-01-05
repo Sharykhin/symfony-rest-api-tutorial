@@ -80,6 +80,8 @@ fos_rest:
         rules:
             - { path: ^/api, priorities: [ json, xml ], fallback_format: ~, prefer_extension: true }
 
+liip_functional_test: ~
+
 # Swiftmailer Configuration
 swiftmailer:
     transport: "%mailer_transport%"
