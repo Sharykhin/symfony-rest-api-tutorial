@@ -1,6 +1,15 @@
 services:
+    acme_blog.page.repository:
+        class: Doctrine\ORM\EntityRepository
+        factory: [@doctrine.odm.mongodb.document_manager, getRepository]
+        arguments:
+            - Acme\BlogBundle\Document\Page
+
+#    acme_blog.page.handler:
+#        class: Acme\BlogBundle\Handler\PageHandler
+#        arguments: ["@=service('doctrine_mongodb').getRepository('AcmeBlogBundle:Page')"]
 
     acme_blog.page.handler:
         class: Acme\BlogBundle\Handler\PageHandler
-        arguments: ["@=service('doctrine_mongodb').getRepository('AcmeBlogBundle:Page')"]
-
+        arguments:
+            - "@acme_blog.page.repository"
