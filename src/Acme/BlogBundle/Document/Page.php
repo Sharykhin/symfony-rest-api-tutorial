@@ -26,7 +26,9 @@ class Page implements PageInterface
      * @MongoDB\String
      * @Expose
      *
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(
+     *      message = "title could not be blank"
+     * )
      * @Assert\NotNull()
      * @Assert\Length(
      *      min = 2,
@@ -40,6 +42,10 @@ class Page implements PageInterface
     /**
      * @MongoDB\String
      * @Expose
+     *
+     * @Assert\NotBlank(
+     *      message = "body could not be blank"
+     * )
      */
     protected $body;
 

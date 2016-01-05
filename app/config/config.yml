@@ -71,14 +71,18 @@ doctrine_mongodb:
 
 fos_rest:
     param_fetcher_listener: true
+    serializer:
+            serialize_null: true
     view:
         view_response_listener: 'force'
         formats:
             json: true
             xml: true
+        failed_validation: HTTP_BAD_REQUEST
     format_listener:
         rules:
             - { path: ^/api, priorities: [ json, xml ], fallback_format: ~, prefer_extension: true }
+
 
 liip_functional_test: ~
 
