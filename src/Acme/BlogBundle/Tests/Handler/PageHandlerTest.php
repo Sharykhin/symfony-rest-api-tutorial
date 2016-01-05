@@ -2,26 +2,37 @@
 
 namespace Acme\BlogBundle\Tests\Handler;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Acme\BlogBundle\Tests\AbstractTest;
+use Acme\BlogBundle\Document\Page;
 
-class PageHandlerTest extends WebTestCase
+class PageHandlerTest extends AbstractTest
 {
 
     /**
-     * @dataProvider urlProvider
+     * fixtures to load before each test
      */
-    public function testGet($url)
-    {
-        $client = self::createClient();
-        $client->request('GET', $url, [], [] ,$server = ['CONTENT_TYPE'=>'application/json']);
-        $response = $client->getResponse();
-        $this->assertTrue($response->isSuccessful());
-    }
+    protected $fixtures = array(
+        'Acme\BlogBundle\DataFixtures\MongoDB\LoadPageData'
+    );
 
-    public function urlProvider()
+
+    public function testGet()
     {
-        return array(
-            array('/api/v1/pages/568b68a33dfd592f2b8b4567')
-        );
+
+        $page = new Page();
+        $page->setTitle('testTitle');
+        $page->setBody('testBody');
+        $this->dm->persist($page);
+        $this->dm->flush();
+
+        $url = '/api/v1/pages/'. $page->getId().'.json';
+
+        $this->client->request('GET', $url, [], [], ['accept' => 'application/json']);
+        $response = $this->client->getResponse();
+        $this->assertTrue($response->isSuccessful());
+        $content = json_decode($response->getContent(), true);
+        $this->assertEquals('testTitle', $content['title']);
+        $this->assertEquals('testBody', $content['body']);
+
     }
 }

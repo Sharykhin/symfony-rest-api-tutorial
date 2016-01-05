@@ -3,11 +3,14 @@
 namespace Acme\BlogBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Acme\BlogBundle\Document\Page;
 
-class LoadPageData implements FixtureInterface
+class LoadPageData extends AbstractFixture implements FixtureInterface
 {
+    static public $page;
+
     public function load(ObjectManager $manager)
     {
         $page = new Page();
@@ -16,5 +19,7 @@ class LoadPageData implements FixtureInterface
 
         $manager->persist($page);
         $manager->flush();
+
+        self::$page = $page;
     }
 }
