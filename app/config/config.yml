@@ -83,6 +83,7 @@ fos_rest:
         rules:
             - { path: ^/api, priorities: [ json, xml ], fallback_format: ~, prefer_extension: true }
 
+nelmio_api_doc: ~
 
 liip_functional_test: ~
 

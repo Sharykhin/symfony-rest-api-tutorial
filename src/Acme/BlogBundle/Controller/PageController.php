@@ -6,6 +6,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\View\View;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Acme\BlogBundle\Document\Page;
 use Symfony\Component\HttpFoundation\Request;
 use Acme\BlogBundle\Exception\InvalidFormException;
@@ -13,6 +14,30 @@ use Acme\BlogBundle\Exception\InvalidFormException;
 class PageController extends FOSRestController
 {
     /**
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Gets a Page for a given id",
+     *   output = "Acme\BlogBundle\Document\Page",
+     *   requirements={
+     *     {
+     *       "name"="id",
+     *       "dataType"="integer",
+     *       "requirement"="\d+",
+     *       "description"="The ObjectID of Page"
+     *     },
+     *     {
+     *      "name"="_format",
+     *      "dataType"="string",
+     *      "requirement"="json|xml",
+     *      "description"="Output format"
+     *     }
+     *   },
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the page is not found"
+     *   }
+     * )
+     *
      * @Rest\View
      *
      * @param $id
@@ -32,6 +57,16 @@ class PageController extends FOSRestController
     }
 
     /**
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Creates a new page from the submitted data.",
+     *   input = "Acme\BlogBundle\Form\PageType",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     400 = "Returned when the form has errors"
+     *   }
+     * )
+     *
      * @Rest\View(
      *   statusCode = Codes::HTTP_BAD_REQUEST
      * )

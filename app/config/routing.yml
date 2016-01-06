@@ -3,6 +3,10 @@ acme_blog:
     prefix: /api
     resource: "@AcmeBlogBundle/Resources/config/routes.yml"
 
+NelmioApiDocBundle:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix:   /api/doc
+
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
