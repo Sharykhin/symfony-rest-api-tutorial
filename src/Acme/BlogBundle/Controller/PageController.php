@@ -67,10 +67,6 @@ class PageController extends FOSRestController
      *   }
      * )
      *
-     * @Rest\View(
-     *   statusCode = Codes::HTTP_BAD_REQUEST
-     * )
-     *
      * @param Request $request
      * @return mixed
      * @throws \Exception

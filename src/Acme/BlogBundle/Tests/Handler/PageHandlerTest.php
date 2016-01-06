@@ -16,7 +16,7 @@ class PageHandlerTest extends AbstractTest
     );
 
 
-    public function testGetPaheAction()
+    public function testGetPageAction()
     {
         $page = new Page();
         $page->setTitle('testTitle');
@@ -30,8 +30,8 @@ class PageHandlerTest extends AbstractTest
         $response = $this->client->getResponse();
         $this->assertTrue($response->isSuccessful());
         $content = json_decode($response->getContent(), true);
-        $this->assertEquals('testTitle', $content['title']);
-        $this->assertEquals('testBody', $content['body']);
+        $this->assertEquals('testTitle', $content['data']['title']);
+        $this->assertEquals('testBody', $content['data']['body']);
     }
 
     public function testPostPageAction()
