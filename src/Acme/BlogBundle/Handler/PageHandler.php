@@ -39,6 +39,31 @@ class PageHandler implements PageHandlerInterface
         return $this->repository->find($id);
     }
 
+    /**
+     * Edit a Page.
+     *
+     * @param PageInterface $page
+     * @param array         $parameters
+     *
+     * @return PageInterface
+     */
+    public function put(PageInterface $page, array $parameters)
+    {
+        return $this->processForm($page, $parameters, 'PUT');
+    }
+    /**
+     * Partially update a Page.
+     *
+     * @param PageInterface $page
+     * @param array         $parameters
+     *
+     * @return PageInterface
+     */
+    public function patch(PageInterface $page, array $parameters)
+    {
+        return $this->processForm($page, $parameters, 'PATCH');
+    }
+
     public function post(array $parameters)
     {
         $page = $this->createPage();

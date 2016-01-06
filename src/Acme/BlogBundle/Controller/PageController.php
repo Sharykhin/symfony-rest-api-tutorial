@@ -100,6 +100,12 @@ class PageController extends FOSRestController
 
         $response['data'] = $page;*/
 
+        $response=[
+            'success'=>true,
+            'data'=>null,
+            'errors'=>null
+        ];
+
         try {
             $page = $this->container->get('acme_blog.page.handler')->post($request->request->all());
         } catch (InvalidFormException $e) {
@@ -112,9 +118,89 @@ class PageController extends FOSRestController
 
             return View::create($response, Codes::HTTP_BAD_REQUEST);
         }
-        return View::create(['data'=>$page], Codes::HTTP_OK);
-        //return View::create($response, Codes::HTTP_OK);
+        $response['data'] = $page;
+        return View::create($response, Codes::HTTP_OK);
     }
+
+    /**
+     * Update existing page from the submitted data or create a new page at a specific location.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   input = "Acme\DemoBundle\Form\PageType",
+     *   statusCodes = {
+     *     201 = "Returned when the Page is created",
+     *     204 = "Returned when successful",
+     *     400 = "Returned when the form has errors"
+     *   }
+     * )
+     *
+     *
+     * @param Request $request the request object
+     * @param int     $id      the page id
+     *
+     * @return FormTypeInterface|View
+     *
+     * @throws NotFoundHttpException when page not exist
+     */
+    public function putPageAction(Request $request, $id)
+    {
+        try {
+            $page = $this->container->get('acme_blog.page.handler')->get($id);
+            if (!($page)) {
+                $statusCode = Codes::HTTP_CREATED;
+                $page = $this->container->get('acme_blog.page.handler')->post(
+                    $request->request->all()
+                );
+            } else {
+                $statusCode = Codes::HTTP_NO_CONTENT;
+                $page = $this->container->get('acme_blog.page.handler')->put(
+                    $page,
+                    $request->request->all()
+                );
+            }
+            return View::create(['page'=>$page], $statusCode);
+        } catch (InvalidFormException $exception) {
+            return $exception->getForm();
+        }
+    }
+    /**
+     * Update existing page from the submitted data or create a new page at a specific location.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   input = "Acme\DemoBundle\Form\PageType",
+     *   statusCodes = {
+     *     204 = "Returned when successful",
+     *     400 = "Returned when the form has errors"
+     *   }
+     * )
+     *
+     * @param Request $request the request object
+     * @param int     $id      the page id
+     *
+     * @return FormTypeInterface|View
+     *
+     * @throws NotFoundHttpException when page not exist
+     */
+    public function patchPageAction(Request $request, $id)
+    {
+        try {
+            $page = $this->container->get('acme_blog.page.handler')->get($id);
+            if (!$page) {
+                $this->createNotFoundException('Page not found');
+            }
+            $page = $this->container->get('acme_blog.page.handler')->patch(
+                $page,
+                $request->request->all()
+            );
+        } catch (InvalidFormException $exception) {
+            return $exception->getForm();
+        }
+
+        return View::create(['page'=>$page], Codes::HTTP_OK);
+    }
+
 
     private function getErrorMessages(\Symfony\Component\Form\Form $form) {
         $errors = array();
