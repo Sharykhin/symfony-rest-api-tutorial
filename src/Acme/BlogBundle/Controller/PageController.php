@@ -73,7 +73,7 @@ class PageController extends FOSRestController
      */
     public function postPageAction(Request $request)
     {
-        $page = new Page();
+        /*$page = new Page();
         $page->setBody($request->request->get('body'));
         $page->setTitle($request->request->get('title'));
         $validator = $this->get('validator');
@@ -98,15 +98,41 @@ class PageController extends FOSRestController
         $dm->flush();
 
 
-        $response['data'] = $page;
+        $response['data'] = $page;*/
 
-        /*try {
+        try {
             $page = $this->container->get('acme_blog.page.handler')->post($request->request->all());
         } catch (InvalidFormException $e) {
+            $response=[];
+            $errors = $this->getErrorMessages($e->getForm());
+            $response['data'] = null;
+            $response['success'] = false;
+            $response['errors'] = $errors;
 
-            return ['data'=>[], 'form'=>$e->getForm()];
-        }*/
 
-        return View::create($response, Codes::HTTP_OK);
+            return View::create($response, Codes::HTTP_BAD_REQUEST);
+        }
+        return View::create(['data'=>$page], Codes::HTTP_OK);
+        //return View::create($response, Codes::HTTP_OK);
+    }
+
+    private function getErrorMessages(\Symfony\Component\Form\Form $form) {
+        $errors = array();
+
+        foreach ($form->getErrors() as $key => $error) {
+            if ($form->isRoot()) {
+                $errors['#'][] = $error->getMessage();
+            } else {
+                $errors[] = $error->getMessage();
+            }
+        }
+
+        foreach ($form->all() as $child) {
+            if (!$child->isValid()) {
+                $errors[$child->getName()] = $this->getErrorMessages($child);
+            }
+        }
+
+        return $errors;
     }
 }
