@@ -2,6 +2,7 @@
 
 namespace Acme\BlogBundle\Controller;
 
+use Acme\BlogBundle\Model\PageInterface;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Util\Codes;
@@ -49,7 +50,7 @@ class PageController extends FOSRestController
 
         $page = $this->container->get('acme_blog.page.handler')->get($id);
 
-        if (!$page) {
+        if (!$page instanceof PageInterface) {
             throw $this->createNotFoundException('No page found for id '. $id);
         }
 
@@ -147,7 +148,7 @@ class PageController extends FOSRestController
     {
         try {
             $page = $this->container->get('acme_blog.page.handler')->get($id);
-            if (!($page)) {
+            if (!$page instanceof PageInterface) {
                 $statusCode = Codes::HTTP_CREATED;
                 $page = $this->container->get('acme_blog.page.handler')->post(
                     $request->request->all()
