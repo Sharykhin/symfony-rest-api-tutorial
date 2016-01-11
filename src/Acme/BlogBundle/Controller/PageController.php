@@ -16,11 +16,22 @@ use Acme\BlogBundle\Handler\PageHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Acme\BlogBundle\Exception\InvalidFormException;
 
+/**
+ * Class PageController
+ * @package Acme\BlogBundle\Controller
+ */
 class PageController extends FOSRestController
 {
 
     /** @DI\Inject("acme_blog.page.handler") */
     private $pageHandler;
+
+    private $pager;
+
+    public function __construct(PageHandlerInterface $pager)
+    {
+        $this->pager = $pager;
+    }
 
     /**
      * List all pages.
@@ -85,7 +96,8 @@ class PageController extends FOSRestController
     public function getPageAction($id)
     {
 
-        $page = $this->pageHandler->get($id);
+
+        $page = $this->pager->get($id);
 
         if (!$page instanceof PageInterface) {
             throw $this->createNotFoundException('No page found for id '. $id);
