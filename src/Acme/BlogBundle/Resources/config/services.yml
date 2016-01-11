@@ -21,8 +21,3 @@ services:
             - "@doctrine.odm.mongodb.document_manager"
             - "@form.factory"
             - "%acme_blog.document.page.class%"
-
-
-#    acme_blog.page.controller:
-#        class: Acme\BlogBundle\Controller\PageController
-#        arguments: ["@acme_blog.page.handler"]

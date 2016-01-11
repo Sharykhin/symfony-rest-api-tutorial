@@ -9,9 +9,6 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use JMS\DiExtraBundle\Annotation\Service;
-use JMS\DiExtraBundle\Annotation\InjectParams;
-use JMS\DiExtraBundle\Annotation\Inject;
 use Acme\BlogBundle\Document\Page;
 use Acme\BlogBundle\Handler\PageHandlerInterface;
 use JMS\DiExtraBundle\Annotation as DI;
@@ -22,20 +19,13 @@ use Acme\BlogBundle\Exception\InvalidFormException;
 /**
  * Class PageController
  * @package Acme\BlogBundle\Controller
- * @Service("acme_blog.page.controller")
  */
 class PageController extends FOSRestController
 {
 
-    /**
-     * @InjectParams({
-     *     "pager" = @Inject("acme_blog.page.handler")
-     * })
-     */
-    public function __construct(PageHandlerInterface $pager)
-    {
-        $this->pager = $pager;
-    }
+    /** @DI\Inject("acme_blog.page.handler") */
+    private $pageHandler;
+
 
     /**
      * List all pages.
@@ -101,7 +91,7 @@ class PageController extends FOSRestController
     {
 
 
-        $page = $this->pager->get($id);
+        $page = $this->pageHandler->get($id);
 
         if (!$page instanceof PageInterface) {
             throw $this->createNotFoundException('No page found for id '. $id);
