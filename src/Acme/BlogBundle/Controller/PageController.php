@@ -10,12 +10,17 @@ use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Acme\BlogBundle\Document\Page;
+use Acme\BlogBundle\Handler\PageHandlerInterface;
+use JMS\DiExtraBundle\Annotation as DI;
+use Acme\BlogBundle\Handler\PageHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Acme\BlogBundle\Exception\InvalidFormException;
 
 class PageController extends FOSRestController
 {
 
+    /** @DI\Inject("acme_blog.page.handler") */
+    private $pageHandler;
 
     /**
      * List all pages.
@@ -73,8 +78,6 @@ class PageController extends FOSRestController
      *   }
      * )
      *
-     * @Rest\View
-     *
      * @param $id
      * @return mixed
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
@@ -82,13 +85,12 @@ class PageController extends FOSRestController
     public function getPageAction($id)
     {
 
-        $page = $this->container->get('acme_blog.page.handler')->get($id);
+        $page = $this->pageHandler->get($id);
 
         if (!$page instanceof PageInterface) {
             throw $this->createNotFoundException('No page found for id '. $id);
         }
-
-        return ['data' => $page,'success' => true, 'errors' => []];
+        return $this->view(['data' => $page,'success' => true, 'errors' => []], Codes::HTTP_OK);
     }
 
     /**

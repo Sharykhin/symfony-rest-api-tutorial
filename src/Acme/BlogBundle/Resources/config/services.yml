@@ -14,8 +14,10 @@ services:
 
     acme_blog.page.handler:
         class: Acme\BlogBundle\Handler\PageHandler
+#        autowiring_types: Acme\BlogBundle\Handler\PageHandlerInterface
         arguments:
             - "@acme_blog.page.repository"
             - "@doctrine.odm.mongodb.document_manager"
             - "@form.factory"
             - "%acme_blog.document.page.class%"
+
