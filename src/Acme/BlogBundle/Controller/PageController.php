@@ -5,6 +5,7 @@ namespace Acme\BlogBundle\Controller;
 use Acme\BlogBundle\Model\PageInterface;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -14,6 +15,39 @@ use Acme\BlogBundle\Exception\InvalidFormException;
 
 class PageController extends FOSRestController
 {
+
+
+    /**
+     * List all pages.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing pages.")
+     * @Rest\QueryParam(name="limit", requirements="\d+", default="5", description="How many pages to return.")
+     *
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * @return array
+     */
+    public function getPagesAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
+        $offset = $paramFetcher->get('offset');
+        $offset = null == $offset ? 0 : $offset;
+        $limit = $paramFetcher->get('limit');
+
+        $data = $this->container->get('acme_blog.page.handler')->all($limit, $offset);
+        return ['data' => $data,'success' => true, 'errors' => []];
+
+
+    }
+
     /**
      * @ApiDoc(
      *   resource = true,
@@ -74,33 +108,6 @@ class PageController extends FOSRestController
      */
     public function postPageAction(Request $request)
     {
-        /*$page = new Page();
-        $page->setBody($request->request->get('body'));
-        $page->setTitle($request->request->get('title'));
-        $validator = $this->get('validator');
-        $errors = $validator->validate($page);
-        $response = [
-            'data'=>null,
-            'success'=>true,
-            'errors'=>null
-        ];
-        if (count($errors) > 0) {
-            $response['success'] = false;
-            $response['errors'] = [];
-            foreach($errors as $error) {
-                $response['errors'][] = $error->getMessage();
-            }
-
-            return View::create($response, Codes::HTTP_BAD_REQUEST);
-        }
-
-        $dm = $this->container->get("doctrine_mongodb")->getManager();
-        $dm->persist($page);
-        $dm->flush();
-
-
-        $response['data'] = $page;*/
-
         $response=[
             'success'=>true,
             'data'=>null,

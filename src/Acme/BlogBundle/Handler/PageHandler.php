@@ -34,6 +34,19 @@ class PageHandler implements PageHandlerInterface
         $this->formFactory = $formFactory;
     }
 
+    /**
+     * Get a list of Pages.
+     *
+     * @param int $limit  the limit of the result
+     * @param int $offset starting from the offset
+     *
+     * @return array
+     */
+    public function all($limit = 5, $offset = 0, $orderby = null)
+    {
+        return $this->repository->findBy(array(), $orderby, $limit, $offset);
+    }
+
     public function get($id)
     {
         return $this->repository->find($id);
