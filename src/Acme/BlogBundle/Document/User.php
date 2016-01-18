@@ -14,7 +14,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @MongoDB\Document (collection="users")
  * @ExclusionPolicy("all")
  */
-class User implements UserInterface
+class User implements UserInterface, \Serializable
 {
 
     /**
@@ -66,6 +66,24 @@ class User implements UserInterface
 
     public function eraseCredentials()
     {
+    }
+
+    public function serialize()
+    {
+        return serialize([
+            $this->id,
+            $this->username,
+            $this->password
+        ]);
+    }
+
+    public function unserialize($serialized)
+    {
+        list(
+            $this->id,
+            $this->username,
+            $this->password
+        ) = unserialize($serialized);
     }
 
 
