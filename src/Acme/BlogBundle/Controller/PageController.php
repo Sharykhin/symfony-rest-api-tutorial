@@ -22,9 +22,16 @@ use Acme\BlogBundle\Exception\InvalidFormException;
  */
 class PageController extends FOSRestController
 {
+    use ResponseTrait;
 
     /** @DI\Inject("acme_blog.page.handler") */
     private $pageHandler;
+
+    /**
+     * @DI\Inject("acme_blog.error.service")
+     * @var
+     */
+    private $errorService;
 
 
     /**
@@ -51,11 +58,8 @@ class PageController extends FOSRestController
         $offset = $paramFetcher->get('offset');
         $offset = null == $offset ? 0 : $offset;
         $limit = $paramFetcher->get('limit');
-
-        $data = $this->container->get('acme_blog.page.handler')->all($limit, $offset);
-        return ['data' => $data,'success' => true, 'errors' => []];
-
-
+        $data = $this->pageHandler->all($limit, $offset);
+        return $this->successResponse($data);
     }
 
     /**
@@ -69,12 +73,6 @@ class PageController extends FOSRestController
      *       "dataType"="integer",
      *       "requirement"="\d+",
      *       "description"="The ObjectID of Page"
-     *     },
-     *     {
-     *      "name"="_format",
-     *      "dataType"="string",
-     *      "requirement"="json|xml",
-     *      "description"="Output format"
      *     }
      *   },
      *   statusCodes = {
@@ -89,14 +87,11 @@ class PageController extends FOSRestController
      */
     public function getPageAction($id)
     {
-
-
         $page = $this->pageHandler->get($id);
-
         if (!$page instanceof PageInterface) {
-            throw $this->createNotFoundException('No page found for id '. $id);
+            return $this->notFoundResponse('No page found for id'. $id);
         }
-        return $this->view(['data' => $page,'success' => true, 'errors' => []], Codes::HTTP_OK);
+        return $this->successResponse($page);
     }
 
     /**
@@ -104,6 +99,7 @@ class PageController extends FOSRestController
      *   resource = true,
      *   description = "Creates a new page from the submitted data.",
      *   input = "Acme\BlogBundle\Form\PageType",
+     *
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     400 = "Returned when the form has errors"
@@ -116,26 +112,14 @@ class PageController extends FOSRestController
      */
     public function postPageAction(Request $request)
     {
-        $response=[
-            'success'=>true,
-            'data'=>null,
-            'errors'=>null
-        ];
 
         try {
-            $page = $this->container->get('acme_blog.page.handler')->post($request->request->all());
+            $page = $this->pageHandler->post($request->request->all());
         } catch (InvalidFormException $e) {
-            $response=[];
-            $errors = $this->getErrorMessages($e->getForm());
-            $response['data'] = null;
-            $response['success'] = false;
-            $response['errors'] = $errors;
-
-
-            return View::create($response, Codes::HTTP_BAD_REQUEST);
+            $errors = $this->errorService->getFormErrorMessages($e->getForm());
+            return $this->badRequestResponse($errors);
         }
-        $response['data'] = $page;
-        return View::create($response, Codes::HTTP_OK);
+        return $this->successCreatedResponse($page);
     }
 
     /**
@@ -162,24 +146,20 @@ class PageController extends FOSRestController
     public function putPageAction(Request $request, $id)
     {
         try {
-            $page = $this->container->get('acme_blog.page.handler')->get($id);
+            $page = $this->pageHandler->get($id);
             if (!$page instanceof PageInterface) {
-                $statusCode = Codes::HTTP_CREATED;
-                $page = $this->container->get('acme_blog.page.handler')->post(
-                    $request->request->all()
-                );
-            } else {
-                $statusCode = Codes::HTTP_NO_CONTENT;
-                $page = $this->container->get('acme_blog.page.handler')->put(
-                    $page,
-                    $request->request->all()
-                );
+                $page = $this->pageHandler->post($request->request->all());
+                return $this->successCreatedResponse($page);
             }
-            return View::create(['page'=>$page], $statusCode);
-        } catch (InvalidFormException $exception) {
-            return $exception->getForm();
+            $page = $this->pageHandler->put($page, $request->request->all());
+            return $this->successUpdatedResponse($page);
+
+        } catch (InvalidFormException $e) {
+            $errors = $this->errorService->getFormErrorMessages($e->getForm());
+            return $this->badRequestResponse($errors);
         }
     }
+
     /**
      * Update existing page from the submitted data or create a new page at a specific location.
      *
@@ -202,39 +182,42 @@ class PageController extends FOSRestController
     public function patchPageAction(Request $request, $id)
     {
         try {
-            $page = $this->container->get('acme_blog.page.handler')->get($id);
-            if (!$page) {
-                $this->createNotFoundException('Page not found');
+            $page = $this->pageHandler->get($id);
+            if (!$page instanceof PageInterface) {
+                return $this->notFoundResponse('No page found with id '. $id);
             }
-            $page = $this->container->get('acme_blog.page.handler')->patch(
+            $page = $this->pageHandler->patch(
                 $page,
                 $request->request->all()
             );
-        } catch (InvalidFormException $exception) {
-            return $exception->getForm();
+            return $this->successUpdatedResponse($page);
+        } catch (InvalidFormException $e) {
+            $errors = $this->errorService->getFormErrorMessages($e->getForm());
+            return $this->badRequestResponse($errors);
         }
-
-        return View::create(['page'=>$page], Codes::HTTP_OK);
     }
 
-
-    private function getErrorMessages(\Symfony\Component\Form\Form $form) {
-        $errors = array();
-
-        foreach ($form->getErrors() as $key => $error) {
-            if ($form->isRoot()) {
-                $errors['#'][] = $error->getMessage();
-            } else {
-                $errors[] = $error->getMessage();
-            }
+    /**
+     * Remove page by id
+     *
+     * @ApiDoc(
+     *  resource = true,
+     *  statusCodes = {
+     *      204 = "Returned when an existing Page was successfully removed",
+     *      404 = "Returned when the Page was not found"
+     *  }
+     * )
+     *
+     * @param $id
+     * @return \FOS\RestBundle\View\View
+     */
+    public function deleteCategoryAction($id)
+    {
+        $page = $this->pageHandler->get($id);
+        if (!$page instanceof PageInterface) {
+            return $this->notFoundResponse('No page found with id '. $id);
         }
-
-        foreach ($form->all() as $child) {
-            if (!$child->isValid()) {
-                $errors[$child->getName()] = $this->getErrorMessages($child);
-            }
-        }
-
-        return $errors;
+        $this->pageHandler->delete($page);
+        return $this->successRemoveResponse();
     }
 }

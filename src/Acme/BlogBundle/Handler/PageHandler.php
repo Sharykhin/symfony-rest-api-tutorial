@@ -2,6 +2,9 @@
 
 namespace Acme\BlogBundle\Handler;
 
+use JMS\DiExtraBundle\Annotation\Inject;
+use JMS\DiExtraBundle\Annotation\InjectParams;
+use JMS\DiExtraBundle\Annotation\Service;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\FormFactoryInterface;
 use Acme\BlogBundle\Form\PageType;
@@ -9,18 +12,29 @@ use Acme\BlogBundle\Model\PageInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Acme\BlogBundle\Exception\InvalidFormException;
 
-
+/**
+ * Class PageHandler
+ * @package Acme\BlogBundle\Handler
+ *
+ * @Service ("acme_blog.page.handler", public=true)
+ */
 class PageHandler implements PageHandlerInterface
 {
 
-    private $repository;
 
-    private $entityClass;
-
-    private $om;
-
-    private $formFactory;
-
+    /**
+     * @param DocumentRepository $repository
+     * @param ObjectManager $om
+     * @param FormFactoryInterface $formFactory
+     * @param $entityClass
+     *
+     * @InjectParams({
+     *      "repository"    =   @Inject("acme_blog.page.repository"),
+     *      "om"            =   @Inject("doctrine.odm.mongodb.document_manager"),
+     *      "formFactory"   =   @Inject("form.factory"),
+     *      "entityClass"   =   @Inject("%acme_blog.document.page.class%")
+     * })
+     */
     public function __construct(
         DocumentRepository $repository,
         ObjectManager $om,
@@ -35,11 +49,9 @@ class PageHandler implements PageHandlerInterface
     }
 
     /**
-     * Get a list of Pages.
-     *
-     * @param int $limit  the limit of the result
-     * @param int $offset starting from the offset
-     *
+     * @param int $limit
+     * @param int $offset
+     * @param null $orderby
      * @return array
      */
     public function all($limit = 5, $offset = 0, $orderby = null)
@@ -47,6 +59,10 @@ class PageHandler implements PageHandlerInterface
         return $this->repository->findBy(array(), $orderby, $limit, $offset);
     }
 
+    /**
+     * @param $id
+     * @return object
+     */
     public function get($id)
     {
         return $this->repository->find($id);
@@ -77,6 +93,10 @@ class PageHandler implements PageHandlerInterface
         return $this->processForm($page, $parameters, 'PATCH');
     }
 
+    /**
+     * @param array $parameters
+     * @return PageInterface|mixed
+     */
     public function post(array $parameters)
     {
         $page = $this->createPage();
@@ -84,6 +104,22 @@ class PageHandler implements PageHandlerInterface
         return $this->processForm($page, $parameters, 'POST');
     }
 
+    /**
+     * @param PageInterface $page
+     */
+    public function delete(PageInterface $page)
+    {
+        $this->om->remove($page);
+        $this->om->flush();
+    }
+
+    /**
+     * @param PageInterface $page
+     * @param array $parameters
+     * @param string $method
+     * @return PageInterface|mixed
+     * @throws \Acme\BlogBundle\Exception\InvalidFormException
+     */
     private function processForm(PageInterface $page, array $parameters, $method = "PUT")
     {
         $form = $this->formFactory->create(new PageType(), $page, ['method' => $method]);
@@ -99,6 +135,9 @@ class PageHandler implements PageHandlerInterface
         throw new InvalidFormException('Invalid submitted data', $form);
     }
 
+    /**
+     * @return mixed
+     */
     private function createPage()
     {
         return new $this->entityClass();
