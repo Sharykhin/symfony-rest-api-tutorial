@@ -9,7 +9,7 @@ use JMS\DiExtraBundle\Annotation\Service;
  * Class ErrorService
  * @package AppBundle\Services
  *
- * @Service("app.error.service", public=true)
+ * @Service("acme_blog.error.service", public=true)
  */
 class ErrorService implements ErrorServiceInterface
 {

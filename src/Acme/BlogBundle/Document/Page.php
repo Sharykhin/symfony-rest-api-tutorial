@@ -7,10 +7,11 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use Acme\BlogBundle\Model\PageInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique;
 
 /**
  * @MongoDB\Document (collection="pages")
- *
+ * @Unique("title")
  * @ExclusionPolicy("all")
  *
  */

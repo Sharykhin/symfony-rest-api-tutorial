@@ -6,15 +6,12 @@ use Acme\BlogBundle\Model\PageInterface;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\Util\Codes;
-use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Acme\BlogBundle\Document\Page;
 use Acme\BlogBundle\Handler\PageHandlerInterface;
 use JMS\DiExtraBundle\Annotation as DI;
-use Acme\BlogBundle\Handler\PageHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Acme\BlogBundle\Exception\InvalidFormException;
+use Acme\BlogBundle\Helper\ResponseTrait;
 
 /**
  * Class PageController
@@ -211,7 +208,7 @@ class PageController extends FOSRestController
      * @param $id
      * @return \FOS\RestBundle\View\View
      */
-    public function deleteCategoryAction($id)
+    public function deletePageAction($id)
     {
         $page = $this->pageHandler->get($id);
         if (!$page instanceof PageInterface) {
