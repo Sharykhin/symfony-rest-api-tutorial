@@ -33,6 +33,6 @@ class PageType extends AbstractType
      */
     public function getName()
     {
-        return '';
+        return 'page';
     }
 }
