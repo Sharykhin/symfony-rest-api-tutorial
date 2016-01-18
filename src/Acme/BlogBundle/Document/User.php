@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * Class User
  * @package Acme\BlogBundle\Document
  *
- * @MongoDB\Document (collection="users")
+ * @MongoDB\Document (collection="users", repositoryClass="Acme\BlogBundle\Repository\UserRepository")
  * @ExclusionPolicy("all")
  */
 class User implements UserInterface, \Serializable

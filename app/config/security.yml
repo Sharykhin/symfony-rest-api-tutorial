@@ -12,9 +12,7 @@ security:
             memory: ~
 
         our_db_provider:
-            entity:
-                class: AcmeBlogBundle:User
-                property: username
+            mongodb: { class: Acme\BlogBundle\Document\User}
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
