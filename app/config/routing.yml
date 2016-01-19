@@ -3,6 +3,11 @@ acme_blog:
     prefix: /api
     resource: "@AcmeBlogBundle/Resources/config/routes.yml"
 
+security:
+    type:   annotation
+    prefix: /api
+    resource: "@AcmeBlogBundle/Controller/SecurityController.php"
+
 NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc
@@ -10,6 +15,3 @@ NelmioApiDocBundle:
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
-
-api_login_check:
-    path: /api/login_check

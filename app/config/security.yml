@@ -25,22 +25,31 @@ security:
             stateless: true
             anonymous: true
             form_login:
+                provider: our_db_provider
+                username_parameter: username
+                password_parameter: password
                 check_path:               /api/login_check
                 success_handler:          lexik_jwt_authentication.handler.authentication_success
                 failure_handler:          lexik_jwt_authentication.handler.authentication_failure
                 require_previous_session: false
 
 
-#        api:
-#            pattern: ^/api
-#            stateless: true
-#            lexik_jwt: ~
+        api:
+            pattern: ^/api
+            stateless: true
+            lexik_jwt:
+                authorization_header:
+                    enabled: true
+                    prefix:
+                query_parameter:
+                    enabled: true
+                    name:    bearer
 
         main:
-            pattern:  ^/api
+            pattern:  ^/admin
             http_basic: ~
             provider: our_db_provider
 
-    access_control:
-        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+    #access_control:
+    #    - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    #    - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
