@@ -20,7 +20,13 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+
+        api:
+            pattern: ^/api
+            stateless: true,
+            lexik_jwt: ~
+
         main:
-            pattern:  ^/
+            pattern:  ^/admin
             http_basic: ~
             provider: our_db_provider
