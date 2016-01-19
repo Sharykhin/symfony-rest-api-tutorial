@@ -21,7 +21,6 @@ security:
             security: false
 
         login:
-            pattern:  ^/api/login
             stateless: true
             anonymous: true
             form_login:
@@ -40,7 +39,7 @@ security:
             lexik_jwt:
                 authorization_header:
                     enabled: true
-                    prefix:
+                    prefix: Bearer
                 query_parameter:
                     enabled: true
                     name:    bearer
@@ -50,6 +49,6 @@ security:
             http_basic: ~
             provider: our_db_provider
 
-    #access_control:
+    access_control:
     #    - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-    #    - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
