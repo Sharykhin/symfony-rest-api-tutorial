@@ -10,3 +10,6 @@ NelmioApiDocBundle:
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
+
+api_login_check:
+    path: /api/login_check

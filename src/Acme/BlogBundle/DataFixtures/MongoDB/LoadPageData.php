@@ -9,7 +9,6 @@ use Acme\BlogBundle\Document\Page;
 
 class LoadPageData extends AbstractFixture implements FixtureInterface
 {
-    static public $page;
 
     public function load(ObjectManager $manager)
     {
@@ -19,7 +18,5 @@ class LoadPageData extends AbstractFixture implements FixtureInterface
 
         $manager->persist($page);
         $manager->flush();
-
-        self::$page = $page;
     }
 }
