@@ -32,7 +32,7 @@ security:
             stateless: true
             anonymous: true
             form_login:
-                provider: in_memory
+                provider: our_db_provider
                 require_previous_session: false
                 username_parameter: username
                 password_parameter: password
@@ -45,6 +45,7 @@ security:
         api:
             pattern: ^/api
             stateless: true
+            provider: our_db_provider
             lexik_jwt:
                 authorization_header:
                     enabled: true
