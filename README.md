@@ -4,5 +4,5 @@ Rest API tutorial
 Simple rest api 
 
 
-PHP
-MongoDB
+PHP 5.5  
+MongoDB 3.2  
