@@ -19,7 +19,8 @@ security:
                     admin: { password: password, roles: [ 'ROLE_ADMIN' ] }
 
         our_db_provider:
-            mongodb: { class: Acme\BlogBundle\Document\User}
+            mongodb:
+                class: Acme\BlogBundle\Document\User
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
@@ -34,7 +35,7 @@ security:
             form_login:
                 provider: our_db_provider
                 require_previous_session: false
-                username_parameter: username
+                username_parameter: email
                 password_parameter: password
                 check_path:               /api/login_check
                 success_handler:          lexik_jwt_authentication.handler.authentication_success
