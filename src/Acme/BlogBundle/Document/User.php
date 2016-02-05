@@ -29,13 +29,6 @@ class User implements UserInterface, \Serializable
      * @MongoDB\String
      * @Expose
      */
-    protected $username;
-
-    /**
-     * @var
-     * @MongoDB\String
-     * @Expose
-     */
     protected $email;
 
     /**
@@ -44,9 +37,15 @@ class User implements UserInterface, \Serializable
      */
     protected $password;
 
+    /**
+     * @var
+     * @MongoDB\String
+     */
+    protected $name;
+
     public function getUsername()
     {
-        return $this->username;
+        return $this->email;
     }
 
     public function getSalt()
@@ -97,17 +96,6 @@ class User implements UserInterface, \Serializable
         return $this->id;
     }
 
-    /**
-     * Set username
-     *
-     * @param string $username
-     * @return self
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-        return $this;
-    }
 
     /**
      * Set email
@@ -141,5 +129,27 @@ class User implements UserInterface, \Serializable
     {
         $this->password = $password;
         return $this;
+    }
+
+    /**
+     * Set username
+     *
+     * @param string $name
+     * @return self
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string $name
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }

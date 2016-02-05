@@ -12,7 +12,7 @@ class UserRepository extends DocumentRepository implements UserLoaderInterface
     {
 
         $user = $this->createQueryBuilder('u')
-            ->field('username')
+            ->field('email')
             ->equals($username)
             ->getQuery()
             ->getSingleResult();

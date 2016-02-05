@@ -23,7 +23,7 @@ class LoadUserData extends AbstractFixture implements FixtureInterface,Container
     {
         $user = new User();
         $user->setEmail('test@test.com');
-        $user->setUsername('test');
+        $user->setName('test');
 
         $encoder = $this->container->get('security.password_encoder');
         $password = $encoder->encodePassword($user, 'test');
